@@ -13,5 +13,4 @@ huggingface-hub==0.14.1
 # uncomment to use instructor embeddings
 InstructorEmbedding==1.0.1
 sentence-transformers==2.2.2
-docx==1.1.0
-pptx==0.6.23
+
