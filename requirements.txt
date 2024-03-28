@@ -12,6 +12,7 @@ langchain-google-genai==1.0.1
 pypandoc==1.13
 tiktoken==0.4.0
 pydantic==1.9.0
+langchain==0.1.13
 # uncomment to use huggingface llms
 huggingface-hub==0.14.1
 
