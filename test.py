@@ -21,42 +21,42 @@ with open('style.css') as f:
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 
-from abc import ABC, abstractmethod
+# from abc import ABC, abstractmethod
 
-class BaseLanguageModel(ABC):
-    @abstractmethod
-    def agenerate_prompt(self):
-        pass
+# class BaseLanguageModel(ABC):
+#     @abstractmethod
+#     def agenerate_prompt(self):
+#         pass
     
-    @abstractmethod
-    def apredict(self):
-        pass
+#     @abstractmethod
+#     def apredict(self):
+#         pass
     
-    @abstractmethod
-    def apredict_messages(self):
-        pass
+#     @abstractmethod
+#     def apredict_messages(self):
+#         pass
     
-    def generate_prompt(self):
-        raise NotImplementedError("generate_prompt method not implemented")
+#     def generate_prompt(self):
+#         raise NotImplementedError("generate_prompt method not implemented")
     
-    def predict(self):
-        raise NotImplementedError("predict method not implemented")
+#     def predict(self):
+#         raise NotImplementedError("predict method not implemented")
     
-    def predict_messages(self):
-        raise NotImplementedError("predict_messages method not implemented")
+#     def predict_messages(self):
+#         raise NotImplementedError("predict_messages method not implemented")
 
-class LLMChain(BaseLanguageModel):
-    def agenerate_prompt(self):
-        # implementation for agenerate_prompt method
-        pass
+# class LLMChain(BaseLanguageModel):
+#     def agenerate_prompt(self):
+#         # implementation for agenerate_prompt method
+#         pass
     
-    def apredict(self):
-        # implementation for apredict method
-        pass
+#     def apredict(self):
+#         # implementation for apredict method
+#         pass
     
-    def apredict_messages(self):
-        # implementation for apredict_messages method
-        pass
+#     def apredict_messages(self):
+#         # implementation for apredict_messages method
+#         pass
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Rest of your Streamlit code
