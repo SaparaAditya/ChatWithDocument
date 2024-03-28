@@ -50,21 +50,21 @@ def get_ppt_text(ppt_files):
         st.error("Error: " + str(e))
 
 # Function to get text from HTML files
-def get_html_text(html_files):
-    text = ""
-    for html_file in html_files:
-        with open(html_file, 'r', encoding='utf-8') as f:
-            soup = BeautifulSoup(f, 'html.parser')
-            text += soup.get_text()
-    return text
+# def get_html_text(html_files):
+#     text = ""
+#     for html_file in html_files:
+#         with open(html_file, 'r', encoding='utf-8') as f:
+#             soup = BeautifulSoup(f, 'html.parser')
+#             text += soup.get_text()
+#     return text
 
 # Function to get text from LaTeX files
-def get_latex_text(latex_files):
-    text = ""
-    for latex_file in latex_files:
-        output = pypandoc.convert_file(latex_file, 'plain')
-        text += output
-    return text
+# def get_latex_text(latex_files):
+#     text = ""
+#     for latex_file in latex_files:
+#         output = pypandoc.convert_file(latex_file, 'plain')
+#         text += output
+#     return text
 
 # Function to get text from PDF files
 def get_pdf_text(pdf_docs):
@@ -75,9 +75,9 @@ def get_pdf_text(pdf_docs):
     return text
 
 # Function to parse text from a file
-def parse_text(file):
-    text = file.getvalue().decode("utf-8")
-    return text
+# def parse_text(file):
+#     text = file.getvalue().decode("utf-8")
+#     return text
 
 # Function to get text from uploaded documents
 def get_text_from_documents(pdf_docs):
@@ -90,12 +90,12 @@ def get_text_from_documents(pdf_docs):
                 content += get_doc_text(file)
             elif file.name.endswith('.pptx') or file.name.endswith('.ppt'):
                 content += get_ppt_text(file)
-            elif file.name.endswith('.html'):
-                content += get_html_text(file)
-            elif file.name.endswith('.tex'):
-                content += get_latex_text(file)
-            elif file.name.endswith('.txt'):
-                content += parse_text(file)
+            # elif file.name.endswith('.html'):
+            #     content += get_html_text(file)
+            # elif file.name.endswith('.tex'):
+            #     content += get_latex_text(file)
+            # elif file.name.endswith('.txt'):
+            #     content += parse_text(file)
     return content
 
 # Function to split text into chunks
