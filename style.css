@@ -1,0 +1,72 @@
+.ea3mdgi5{
+    background-color: #00203FFF;
+}
+.eczjsme3{
+    background-color: black;
+}
+.eczjsme4{
+    color: black    ;
+}
+.e1nzilvr2{
+    color: black;
+}
+.e1y5xkzn3{
+    color: black;
+}
+
+.e1nzilvr5{
+    color: white;
+}
+
+.ef3psqc12{
+    border-radius: 60px;
+    text-align: center;
+    margin: 2%;
+    height: 4rem;
+    width: 10rem;
+    font-size: 1.2rem;
+    background-color: transparent;
+    border: double rgb(53, 128, 203) 5px;
+    color: white;
+    font-weight: bolder;
+}
+
+.ef3psqc12:hover{
+    /* background-color: #ADEFD1FF; */
+    color: white;
+    /* border: double #00203FFF 2px; */
+    /* cursor: pointer; */
+}
+.e1b2p2ww6{
+    color: white;
+}
+
+.ef3psqc9{
+    border-radius: 60px;
+    text-align: center;
+    margin: 2%;
+    height: 1.5rem;
+    width: 3rem;
+    font-size: 1.2rem;
+    background-color: transparent;
+    border: double rgb(53, 128, 203) 5px;
+    color: white;
+    font-weight: bolder;
+}
+.ef3psqcp:hover{
+    background-color: #ADEFD1FF;
+    color: black;
+    border: double #00203FFF 2px;
+    cursor: pointer;
+}
+
+.ezrtsby2{
+    background-color: #0E1117;
+}
+.e1nzilvr1{
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    border: solid #ADEFD1FF 5px;
+    border-radius: 20px;
+}
