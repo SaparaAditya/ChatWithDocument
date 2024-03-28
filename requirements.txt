@@ -7,7 +7,8 @@ openai==0.27.6
 faiss-cpu==1.7.4
 altair==4
 python-docx==0.8.0
-python=pptx==0.6.23
+python-pptx==0.6.23
+beautifulsoup4==4.12.3
 tiktoken==0.4.0
 # uncomment to use huggingface llms
 huggingface-hub==0.14.1
