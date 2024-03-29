@@ -227,7 +227,7 @@ def user_input(user_question):
     
     # Load the FAISS index
     if allow_dangerous_deserialization:
-        with open("faiss_index", "rb") as f:
+        with open("/faiss_index", "rb") as f:
             new_db = FAISS.deserialize_index(f)
     else:
         # Handle the case where dangerous deserialization is not allowed
