@@ -207,43 +207,35 @@ def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     # Define the path to the faiss_index file
-    faiss_index_path = "faiss_index"  # Corrected variable name
+    faiss_index_path = "faiss_index"
 
-    try:
-        if allow_dangerous_deserialization:
-            with open(faiss_index_path, "rb") as f:
-                new_db = FAISS.deserialize_index(f)
-        else:
-            # Load the index without allowing dangerous deserialization
-            with open(faiss_index_path, "rb") as f:
-                new_db = FAISS.deserialize_index(f)
+    if allow_dangerous_deserialization:
+        with open(faiss_index_path, "rb") as f:
+            new_db = FAISS.deserialize_index(f)
+    else:
+        # Load the index without allowing dangerous deserialization
+        with open(faiss_index_path, "rb") as f:
+            new_db = FAISS.deserialize_index(f)
 
-        # Associate embeddings with the index
-        new_db.add(embeddings)
+    # Associate embeddings with the index
+    new_db.add(embeddings)
 
-        # Perform similarity search and get response from conversational chain
-        docs = new_db.similarity_search(user_question)
-        chain = get_conversational_chain()
-        response = chain(
-            {"input_documents": docs, "question": user_question},
-            return_only_outputs=True
-        )
-        output_text = response.get("output_text", "No answer available")
+    # Perform similarity search and get response from conversational chain
+    docs = new_db.similarity_search(user_question)
+    chain = get_conversational_chain()
+    response = chain(
+        {"input_documents": docs, "question": user_question},
+        return_only_outputs=True
+    )
+    output_text = response.get("output_text", "No answer available")
 
-        # Replace bullet points with line breaks
-        output_text = output_text.replace('•', '\n•')
+    # Replace bullet points with line breaks
+    output_text = output_text.replace('•', '\n•')
 
-        # Add a border around the entire response
-        st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
+    # Add a border around the entire response
+    st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
 
-        return output_text
-
-    except FileNotFoundError:
-        st.error("Error: faiss_index file not found.")
-        return "Error: faiss_index file not found."
-    except Exception as e:
-        st.error("An error occurred: " + str(e))
-        return "An error occurred: " + str(e)
+    return output_text
 # Streamlit app
 def main():
     # st.set_page_config("Chat PDF")
