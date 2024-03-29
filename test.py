@@ -188,10 +188,10 @@ def user_input(user_question):
     allow_dangerous_deserialization = True
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     if allow_dangerous_deserialization:
-        new_db = faiss.read_index("faiss_index", faiss.IO_FLAG_READ_ONLY)
+        new_db = FAISS.read_index("faiss_index", faiss.IO_FLAG_READ_ONLY)
     else:
     # Load the index without allowing dangerous deserialization
-        new_db = faiss.read_index("faiss_index")
+        new_db = FAISS.read_index("faiss_index")
     new_db.add(embeddings)
     
     docs = new_db.similarity_search(user_question)
