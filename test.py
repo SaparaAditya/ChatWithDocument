@@ -206,11 +206,11 @@ def user_input(user_question):
     allow_dangerous_deserialization = True
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     if allow_dangerous_deserialization:
-        with open("faiss_index", "rb") as f:
+        with open("faiss_index_path", "rb") as f:
             new_db = FAISS.deserialize_index(f)
     else:
     # Load the index without allowing dangerous deserialization
-        with open("faiss_index", "rb") as f:
+        with open("faiss_index_path", "rb") as f:
             new_db = FAISS.deserialize_index(f)
 
 # Associate embeddings with the index
