@@ -220,27 +220,18 @@ allow_dangerous_deserialization = True
 
 def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    
-    # Load the FAISS index
-    faiss_index = load_faiss_index()
-    if faiss_index is None:
-        return "Error loading FAISS index."
-    
-    # Perform similarity search and get response from conversational chain
-    docs = faiss_index.similarity_search(user_question)
+    new_db = FAISS.load_local("faiss_index", embeddings)
+    docs = new_db.similarity_search(user_question)
     chain = get_conversational_chain()
     response = chain(
         {"input_documents": docs, "question": user_question},
         return_only_outputs=True
     )
     output_text = response.get("output_text", "No answer available")
-
     # Replace bullet points with line breaks
     output_text = output_text.replace('•', '\n•')
-
     # Add a border around the entire response
     st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
-
     return output_text
 # Streamlit app
 def main():
