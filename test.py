@@ -171,9 +171,28 @@ def get_conversational_chain():
     return chain
 
 # Function to handle user input
+
+# allow_dangerous_deserialization = True
+
+# # Load the FAISS index
+# if allow_dangerous_deserialization:
+#     new_db = faiss.read_index("faiss_index", faiss.IO_FLAG_READ_ONLY)
+# else:
+#     # Load the index without allowing dangerous deserialization
+#     new_db = faiss.read_index("faiss_index")
+
+# Associate embeddings with the index
+
+
 def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    new_db = FAISS.load_local("faiss_index", embeddings)
+    if allow_dangerous_deserialization:
+        new_db = faiss.read_index("faiss_index", faiss.IO_FLAG_READ_ONLY)
+    else:
+    # Load the index without allowing dangerous deserialization
+        new_db = faiss.read_index("faiss_index")
+    new_db.add(embeddings)
+    
     docs = new_db.similarity_search(user_question)
     chain = get_conversational_chain()
     response = chain(
