@@ -19,12 +19,21 @@ with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def load_faiss_index():
+    allow_dangerous_deserialization = True  # Set to True only if you trust the source
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     faiss_index_path = "faiss_index"
-    try:
-        new_db = FAISS.deserialize_index(faiss_index_path)
-        return new_db
-    except Exception as e:
-        st.error("Error loading FAISS index: " + str(e))
+
+    if os.path.exists(faiss_index_path):
+        try:
+            with open(faiss_index_path, "rb") as f:
+                faiss_index = FAISS.deserialize_index(f)
+                faiss_index.add(embeddings)
+                return faiss_index
+        except Exception as e:
+            st.error(f"Error loading FAISS index: {e}")
+            return None
+    else:
+        st.error("FAISS index file not found.")
         return None
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -217,9 +226,6 @@ def user_input(user_question):
     if faiss_index is None:
         return "Error loading FAISS index."
     
-    # Associate embeddings with the index
-    faiss_index.add(embeddings)
-
     # Perform similarity search and get response from conversational chain
     docs = faiss_index.similarity_search(user_question)
     chain = get_conversational_chain()
