@@ -203,7 +203,7 @@ allow_dangerous_deserialization = True
 
 
 def user_input(user_question):
-   allow_dangerous_deserialization = True
+    allow_dangerous_deserialization = True
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     # Define the path to the faiss_index file
