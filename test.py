@@ -18,7 +18,14 @@ import google.generativeai as genai
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-
+def load_faiss_index():
+    faiss_index_path = "faiss_index"
+    try:
+        new_db = FAISS.deserialize_index(faiss_index_path)
+        return new_db
+    except Exception as e:
+        st.error("Error loading FAISS index: " + str(e))
+        return None
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 
 # from abc import ABC, abstractmethod
