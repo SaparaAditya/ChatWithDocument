@@ -207,7 +207,7 @@ def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     # Define the path to the faiss_index file
-    faiss_index_path = "faiss_index"
+    faiss_index_path = "path/to/faiss_index_directory/faiss_index"
 
     if allow_dangerous_deserialization:
         with open(faiss_index_path, "rb") as f:
