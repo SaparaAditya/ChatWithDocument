@@ -7,4 +7,3 @@ pypandoc==1.13
 langchain==0.1.13
 python-dotenv==1.0.1
 google==3.0.0
-os-sys==2.1.4
