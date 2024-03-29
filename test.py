@@ -221,43 +221,19 @@ allow_dangerous_deserialization = True
 def user_input(user_question):
     # Set allow_dangerous_deserialization to True only if you trust the source
     allow_dangerous_deserialization = True
-    
-    # Load the embeddings model
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    
-    # Load the FAISS index
-    if allow_dangerous_deserialization:
-        with open("/faiss_index", "rb") as f:
-            new_db = FAISS.deserialize_index(f)
-    else:
-        # Handle the case where dangerous deserialization is not allowed
-        st.error("Deserialization is not allowed for security reasons.")
-        return "Deserialization is not allowed for security reasons."
-    
-    # Associate embeddings with the index
-    new_db.add(embeddings)
-    
-    # Search for similar documents
+    new_db = FAISS.load_local("faiss_index", embeddings)
     docs = new_db.similarity_search(user_question)
-    
-    # Get the conversational chain
     chain = get_conversational_chain()
-    
-    # Get the response from the conversational chain
     response = chain(
         {"input_documents": docs, "question": user_question},
         return_only_outputs=True
     )
-    
-    # Get the output text from the response
     output_text = response.get("output_text", "No answer available")
-    
     # Replace bullet points with line breaks
     output_text = output_text.replace('•', '\n•')
-    
     # Add a border around the entire response
     st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
-    
     return output_text
 # Streamlit app
 def main():
