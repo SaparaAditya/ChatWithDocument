@@ -203,25 +203,18 @@ allow_dangerous_deserialization = True
 
 
 def user_input(user_question):
-    allow_dangerous_deserialization = True
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
-    # Define the path to the faiss_index file
-    faiss_index_path = "path/to/faiss_index_directory/faiss_index"
-
-    if allow_dangerous_deserialization:
-        with open(faiss_index_path, "rb") as f:
-            new_db = FAISS.deserialize_index(f)
-    else:
-        # Load the index without allowing dangerous deserialization
-        with open(faiss_index_path, "rb") as f:
-            new_db = FAISS.deserialize_index(f)
-
+    # Load the FAISS index
+    faiss_index = load_faiss_index()
+    if faiss_index is None:
+        return "Error loading FAISS index."
+    
     # Associate embeddings with the index
-    new_db.add(embeddings)
+    faiss_index.add(embeddings)
 
     # Perform similarity search and get response from conversational chain
-    docs = new_db.similarity_search(user_question)
+    docs = faiss_index.similarity_search(user_question)
     chain = get_conversational_chain()
     response = chain(
         {"input_documents": docs, "question": user_question},
