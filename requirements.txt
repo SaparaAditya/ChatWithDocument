@@ -1,19 +1,10 @@
-PyPDF2==3.0.1
-python-dotenv==0.18.0
 streamlit==1.32.2
-openai==0.10.1
-faiss-cpu==1.7.0
-altair==4.1.0
-python-docx==0.8.11
-python-pptx==0.6.21
-beautifulsoup4==4.10.0
-langchain-google-genai==0.0.7
-pypandoc==1.6.3
-tiktoken==0.4.0
-pydantic==2.6.4
+PyPDF2==3.0.1
+python-docx==1.1.0
+python-ppt==0.6.23
+beautifulsoup4==4.12.3
+pypandoc==1.13
 langchain==0.1.13
-
-# uncomment to use instructor embeddings
-InstructorEmbedding==1.0.1
-sentence-transformers==2.2.2
-
+python-dotenv==1.0.1
+google==3.0.0
+os-sys==2.1.4
