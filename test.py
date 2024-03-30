@@ -15,6 +15,7 @@ from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 import google.generativeai as genai
 import json
+import io
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
@@ -240,13 +241,13 @@ def get_conversational_chain():
 # # Associate embeddings with the index
 # new_db.add(embeddings)
 
-
 def store_faiss_index_in_local_storage(faiss_index):
     # Serialize the FAISS index to bytes
-    faiss_index_bytes = faiss_index.serialize_index()
+    faiss_index_bytes = io.BytesIO()
+    faiss_index.serialize_index(faiss_index_bytes)
     
     # Encode the bytes to Base64
-    faiss_index_base64 = base64.b64encode(faiss_index_bytes).decode("utf-8")
+    faiss_index_base64 = base64.b64encode(faiss_index_bytes.getvalue()).decode("utf-8")
     
     # Execute JavaScript to store the Base64-encoded index in the local storage
     st.write(
@@ -289,7 +290,7 @@ def process_faiss_index(user_question):
     faiss_index_bytes = base64.b64decode(faiss_index_content.encode("utf-8"))
 
     # Deserialize the bytes to the FAISS index object
-    faiss_index = FAISS.deserialize_index(faiss_index_bytes)
+    faiss_index = FAISS.deserialize_index(io.BytesIO(faiss_index_bytes))
 
     # Your existing processing logic goes here
     # Load the embeddings model
@@ -320,7 +321,10 @@ def process_faiss_index(user_question):
     st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
     
     return output_text
-# Streamlit app
+
+    
+   
+   
 
 
 
