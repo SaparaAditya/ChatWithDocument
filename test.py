@@ -241,6 +241,25 @@ def get_conversational_chain():
 # new_db.add(embeddings)
 
 
+def store_faiss_index_in_local_storage(faiss_index):
+    # Serialize the FAISS index to bytes
+    faiss_index_bytes = faiss_index.serialize_index()
+    
+    # Encode the bytes to Base64
+    faiss_index_base64 = base64.b64encode(faiss_index_bytes).decode("utf-8")
+    
+    # Execute JavaScript to store the Base64-encoded index in the local storage
+    st.write(
+        f"""
+        <script>
+            // Store the Base64-encoded FAISS index in the local storage
+            localStorage.setItem('faissIndex', '{faiss_index_base64}');
+        </script>
+        """
+    )
+    st.success("FAISS index stored in local storage.")
+
+# Function to retrieve the FAISS index from local storage
 def get_faiss_index_from_local_storage():
     # Execute JavaScript to retrieve the content from local storage
     result = st.write(
@@ -256,9 +275,9 @@ def get_faiss_index_from_local_storage():
     # Return the retrieved content
     return result
 
-# Function to handle user input and process faiss_index
+# Function to handle user input and process FAISS index
 def process_faiss_index(user_question):
-    # Retrieve the faiss_index from local storage
+    # Retrieve the FAISS index from local storage
     faiss_index_content = get_faiss_index_from_local_storage()
 
     # If faiss_index_content is None, return an error message
@@ -266,21 +285,21 @@ def process_faiss_index(user_question):
         st.error("Error: FAISS index content not found in local storage.")
         return "Error: FAISS index content not found in local storage."
     
-    # Convert the JSON content to a Python object
-    faiss_index = json.loads(faiss_index_content)
+    # Decode the Base64-encoded content to bytes
+    faiss_index_bytes = base64.b64decode(faiss_index_content.encode("utf-8"))
+
+    # Deserialize the bytes to the FAISS index object
+    faiss_index = FAISS.deserialize_index(faiss_index_bytes)
 
     # Your existing processing logic goes here
     # Load the embeddings model
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
-    # Load the FAISS index
-    new_db = FAISS.deserialize_index(faiss_index)
-    
     # Associate embeddings with the index
-    new_db.add(embeddings)
+    faiss_index.add(embeddings)
     
     # Search for similar documents
-    docs = new_db.similarity_search(user_question)
+    docs = faiss_index.similarity_search(user_question)
     
     # Get the conversational chain
     chain = get_conversational_chain()
@@ -301,7 +320,6 @@ def process_faiss_index(user_question):
     st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
     
     return output_text
-
 # Streamlit app
 
 
