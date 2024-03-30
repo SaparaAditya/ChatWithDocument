@@ -8,73 +8,15 @@ import pypandoc
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 import google.generativeai as genai
-import json
-import io
+
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-def load_faiss_index():
-    allow_dangerous_deserialization = True  # Set to True only if you trust the source
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    faiss_index_path = "faiss_index"
-
-    if os.path.exists(faiss_index_path):
-        try:
-            with open(faiss_index_path, "rb") as f:
-                faiss_index = FAISS.deserialize_index(f)
-                faiss_index.add(embeddings)
-                return faiss_index
-        except Exception as e:
-            st.error(f"Error loading FAISS index: {e}")
-            return None
-    else:
-        st.error("FAISS index file not found.")
-        return None
-# ------------------------------------------------------------------------------------------------------------------------------------------------
-
-# from abc import ABC, abstractmethod
-
-# class BaseLanguageModel(ABC):
-#     @abstractmethod
-#     def agenerate_prompt(self):
-#         pass
-    
-#     @abstractmethod
-#     def apredict(self):
-#         pass
-    
-#     @abstractmethod
-#     def apredict_messages(self):
-#         pass
-    
-#     def generate_prompt(self):
-#         raise NotImplementedError("generate_prompt method not implemented")
-    
-#     def predict(self):
-#         raise NotImplementedError("predict method not implemented")
-    
-#     def predict_messages(self):
-#         raise NotImplementedError("predict_messages method not implemented")
-
-# class LLMChain(BaseLanguageModel):
-#     def agenerate_prompt(self):
-#         # implementation for agenerate_prompt method
-#         pass
-    
-#     def apredict(self):
-#         # implementation for apredict method
-#         pass
-    
-#     def apredict_messages(self):
-#         # implementation for apredict_messages method
-#         pass
-# ------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Rest of your Streamlit code
 # st.title("My Styled Streamlit App")
@@ -108,21 +50,21 @@ def get_ppt_text(ppt_files):
         st.error("Error: " + str(e))
 
 # Function to get text from HTML files
-# def get_html_text(html_files):
-#     text = ""
-#     for html_file in html_files:
-#         with open(html_file, 'r', encoding='utf-8') as f:
-#             soup = BeautifulSoup(f, 'html.parser')
-#             text += soup.get_text()
-#     return text
+def get_html_text(html_files):
+    text = ""
+    for html_file in html_files:
+        with open(html_file, 'r', encoding='utf-8') as f:
+            soup = BeautifulSoup(f, 'html.parser')
+            text += soup.get_text()
+    return text
 
 # Function to get text from LaTeX files
-# def get_latex_text(latex_files):
-#     text = ""
-#     for latex_file in latex_files:
-#         output = pypandoc.convert_file(latex_file, 'plain')
-#         text += output
-#     return text
+def get_latex_text(latex_files):
+    text = ""
+    for latex_file in latex_files:
+        output = pypandoc.convert_file(latex_file, 'plain')
+        text += output
+    return text
 
 # Function to get text from PDF files
 def get_pdf_text(pdf_docs):
@@ -133,9 +75,9 @@ def get_pdf_text(pdf_docs):
     return text
 
 # Function to parse text from a file
-# def parse_text(file):
-#     text = file.getvalue().decode("utf-8")
-#     return text
+def parse_text(file):
+    text = file.getvalue().decode("utf-8")
+    return text
 
 # Function to get text from uploaded documents
 def get_text_from_documents(pdf_docs):
@@ -148,12 +90,12 @@ def get_text_from_documents(pdf_docs):
                 content += get_doc_text(file)
             elif file.name.endswith('.pptx') or file.name.endswith('.ppt'):
                 content += get_ppt_text(file)
-            # elif file.name.endswith('.html'):
-            #     content += get_html_text(file)
-            # elif file.name.endswith('.tex'):
-            #     content += get_latex_text(file)
-            # elif file.name.endswith('.txt'):
-            #     content += parse_text(file)
+            elif file.name.endswith('.html'):
+                content += get_html_text(file)
+            elif file.name.endswith('.tex'):
+                content += get_latex_text(file)
+            elif file.name.endswith('.txt'):
+                content += parse_text(file)
     return content
 
 # Function to split text into chunks
@@ -162,30 +104,7 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-# ++++++++++++++++++++++++++
-def store_vector_store(vector_store):
-    # Convert the vector store content to JSON
-    vector_store_json = json.dumps(vector_store)
-    
-    # Execute JavaScript to store the JSON content in the browser's local storage
-    st.write(
-        f"""
-        <script>
-            // Store the vector store content in the local storage
-            localStorage.setItem('faissIndex', '{vector_store_json}');
-        </script>
-        """
-    )
-    st.success("Vector store content stored in local storage as 'faiss_index'.")
-
-
-
-# ++++++++++++++++++++++++++
-
-
-
 # Function to create a vector store
-
 def get_vector_store(text_chunks):
     if not text_chunks:
         st.warning("No text chunks found.")
@@ -193,8 +112,7 @@ def get_vector_store(text_chunks):
     
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
-    # vector_store.save_local("faiss_index")
-    store_vector_store(vector_store)
+    vector_store.save_local("faiss_index")
 
 # Function to create a conversational chain
 def get_conversational_chain():
@@ -212,121 +130,21 @@ def get_conversational_chain():
     return chain
 
 # Function to handle user input
-
-
-
-# # Load the FAISS index
-# if allow_dangerous_deserialization:
-#     new_db = faiss.read_index("faiss_index", faiss.IO_FLAG_READ_ONLY)
-# else:
-#     # Load the index without allowing dangerous deserialization
-#     new_db = faiss.read_index("faiss_index")
-
-# Associate embeddings with the index
-
-# import FAISS
-
-# Set allow_dangerous_deserialization to True only if you trust the source
-
-
-# Load the FAISS index
-# if allow_dangerous_deserialization:
-#     with open("faiss_index", "rb") as f:
-#         new_db = FAISS.deserialize_index(f)
-# else:
-#     # Load the index without allowing dangerous deserialization
-#     with open("faiss_index", "rb") as f:
-#         new_db = FAISS.deserialize_index(f)
-
-# # Associate embeddings with the index
-# new_db.add(embeddings)
-
-def store_faiss_index_in_local_storage(faiss_index):
-    # Serialize the FAISS index to bytes
-    faiss_index_bytes = io.BytesIO()
-    faiss_index.serialize_index(faiss_index_bytes)
-    
-    # Encode the bytes to Base64
-    faiss_index_base64 = base64.b64encode(faiss_index_bytes.getvalue()).decode("utf-8")
-    
-    # Execute JavaScript to store the Base64-encoded index in the local storage
-    st.write(
-        f"""
-        <script>
-            // Store the Base64-encoded FAISS index in the local storage
-            localStorage.setItem('faissIndex', '{faiss_index_base64}');
-        </script>
-        """
-    )
-    st.success("FAISS index stored in local storage.")
-
-# Function to retrieve the FAISS index from local storage
-def get_faiss_index_from_local_storage():
-    # Execute JavaScript to retrieve the content from local storage
-    result = st.write(
-        """
-        <script>
-            // Retrieve the content from local storage
-            var content = localStorage.getItem('faissIndex');
-            // Send the content back to Streamlit
-            streamlitCallback(content);
-        </script>
-        """
-    )
-    # Return the retrieved content
-    return result
-
-# Function to handle user input and process FAISS index
-def process_faiss_index(user_question):
-    # Retrieve the FAISS index from local storage
-    faiss_index_content = get_faiss_index_from_local_storage()
-
-    # If faiss_index_content is None, return an error message
-    if faiss_index_content is None:
-        st.error("Error: FAISS index content not found in local storage.")
-        return "Error: FAISS index content not found in local storage."
-    
-    # Decode the Base64-encoded content to bytes
-    faiss_index_bytes = base64.b64decode(faiss_index_content.encode("utf-8"))
-
-    # Deserialize the bytes to the FAISS index object
-    faiss_index = FAISS.deserialize_index(io.BytesIO(faiss_index_bytes))
-
-    # Your existing processing logic goes here
-    # Load the embeddings model
+def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    
-    # Associate embeddings with the index
-    faiss_index.add(embeddings)
-    
-    # Search for similar documents
-    docs = faiss_index.similarity_search(user_question)
-    
-    # Get the conversational chain
+    new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+    docs = new_db.similarity_search(user_question)
     chain = get_conversational_chain()
-    
-    # Get the response from the conversational chain
     response = chain(
         {"input_documents": docs, "question": user_question},
         return_only_outputs=True
     )
-    
-    # Get the output text from the response
     output_text = response.get("output_text", "No answer available")
-    
     # Replace bullet points with line breaks
     output_text = output_text.replace('•', '\n•')
-    
     # Add a border around the entire response
     st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
-    
     return output_text
-
-    
-   
-   
-
-
 
 # Streamlit app
 def main():
@@ -358,7 +176,7 @@ def main():
     # Process user input and update chat history
     if user_question:
         # Process user input and get response
-        response = process_faiss_index(user_question)
+        response = user_input(user_question)
 
         # Update chat history
         chat_history.append("<br>")
