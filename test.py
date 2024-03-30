@@ -14,7 +14,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 import google.generativeai as genai
-
+import json
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
@@ -161,7 +161,30 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
+# ++++++++++++++++++++++++++
+def store_vector_store(vector_store):
+    # Convert the vector store content to JSON
+    vector_store_json = json.dumps(vector_store)
+    
+    # Execute JavaScript to store the JSON content in the browser's local storage
+    st.write(
+        f"""
+        <script>
+            // Store the vector store content in the local storage
+            localStorage.setItem('faissIndex', '{vector_store_json}');
+        </script>
+        """
+    )
+    st.success("Vector store content stored in local storage as 'faiss_index'.")
+
+
+
+# ++++++++++++++++++++++++++
+
+
+
 # Function to create a vector store
+
 def get_vector_store(text_chunks):
     if not text_chunks:
         st.warning("No text chunks found.")
@@ -169,7 +192,8 @@ def get_vector_store(text_chunks):
     
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
-    vector_store.save_local("faiss_index")
+    # vector_store.save_local("faiss_index")
+    store_vector_store(vector_store)
 
 # Function to create a conversational chain
 def get_conversational_chain():
@@ -217,22 +241,40 @@ def get_conversational_chain():
 # new_db.add(embeddings)
 
 
+def get_faiss_index_from_local_storage():
+    # Execute JavaScript to retrieve the content from local storage
+    result = st.write(
+        """
+        <script>
+            // Retrieve the content from local storage
+            var content = localStorage.getItem('faissIndex');
+            // Send the content back to Streamlit
+            streamlitCallback(content);
+        </script>
+        """
+    )
+    # Return the retrieved content
+    return result
 
-def user_input(user_question):
-    # Set allow_dangerous_deserialization to True only if you trust the source
-    allow_dangerous_deserialization = True
+# Function to handle user input and process faiss_index
+def process_faiss_index(user_question):
+    # Retrieve the faiss_index from local storage
+    faiss_index_content = get_faiss_index_from_local_storage()
+
+    # If faiss_index_content is None, return an error message
+    if faiss_index_content is None:
+        st.error("Error: FAISS index content not found in local storage.")
+        return "Error: FAISS index content not found in local storage."
     
+    # Convert the JSON content to a Python object
+    faiss_index = json.loads(faiss_index_content)
+
+    # Your existing processing logic goes here
     # Load the embeddings model
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     # Load the FAISS index
-    if allow_dangerous_deserialization:
-        with open("faiss_index", "rb") as f:
-            new_db = FAISS.deserialize_index(f)
-    else:
-        # Handle the case where dangerous deserialization is not allowed
-        st.error("Deserialization is not allowed for security reasons.")
-        return "Deserialization is not allowed for security reasons."
+    new_db = FAISS.deserialize_index(faiss_index)
     
     # Associate embeddings with the index
     new_db.add(embeddings)
@@ -259,6 +301,11 @@ def user_input(user_question):
     st.markdown(f"<div style='border: 1px solid #ccc; padding: 10px;'>🤖: {output_text}</div>", unsafe_allow_html=True)
     
     return output_text
+
+# Streamlit app
+
+
+
 # Streamlit app
 def main():
     # st.set_page_config("Chat PDF")
@@ -289,7 +336,7 @@ def main():
     # Process user input and update chat history
     if user_question:
         # Process user input and get response
-        response = user_input(user_question)
+        response = process_faiss_index(user_question)
 
         # Update chat history
         chat_history.append("<br>")
