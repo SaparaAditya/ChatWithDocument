@@ -26,7 +26,7 @@ with open('style.css') as f:
 load_dotenv()
 
 # Configure Google Generative AI
-genai.configure(api_key=os.getenv("AIzaSyAbGYl1RWYku3ntot7fWhRXjwZlwNOJzvc"))
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Function to get text from a DOCX file
 def get_doc_text(doc_files):
